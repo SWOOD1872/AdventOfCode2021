@@ -1,0 +1,13 @@
+// DRAFT PLAN
+
+// 01) read the first line only, assign it to a slice of ints as the bingo numbers
+// 02) read the rest of the lines from [1:] to get the game boards, append the lines to a slice
+//    02-01) remove all leading and trailing space from all numbers
+// 03) loop over the lines, merge every 5 lines to a 25 int long line
+// 04) append the 25 long lines to a new slice which represents all the game boards
+// 05) now loop over the bingo numbers, loop over the games, loop over the lines in each game (3 loops)
+// 06) mark each bingo number by change it to 1000+n (i.e. if the number being marked is 17, change it to 1017)
+// 07) once the marking is done, call a function to check the line for bingo
+// 08) if we have a bingo, save the winning number and the winning line and break out of all loops, else continue
+// 09) subtract 1000 from each number in the winning line and sum all the number
+// 10) multiply the output of step 09 by the winning number for the answer
