@@ -1,0 +1,20 @@
+1 4 7 8
+
+len(5): 2, 3, 5
+2:
+ - must have all the letters that 1 has
+3:
+ - must have all the letters that 7 has
+5:
+ - whatever one hasn't been decoded yet
+
+========================================================
+
+len(6): 0, 6, 9
+6:
+ - must have all the letters that 1 has
+9:
+ - must have all the letters that 4 has
+0:
+ - whatever one hasn't been decoded yet
+
