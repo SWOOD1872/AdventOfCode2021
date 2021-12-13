@@ -1,20 +1,41 @@
 1 4 7 8
 
 len(5): 2, 3, 5
-2:
- - must have all the letters that 1 has
 3:
  - must have all the letters that 7 has
 5:
- - whatever one hasn't been decoded yet
+ - 3 from 4
+2:
+ - 2 from 4
 
 ========================================================
 
 len(6): 0, 6, 9
-6:
- - must have all the letters that 1 has
 9:
  - must have all the letters that 4 has
+ - must have all the letters that 1 has
+ - must have all the letters that 3 has
+ - must have all the letters that 5 has
+6:
+ - must have all the letters that 1 has
+ - must have all the letters that 5 has
 0:
  - whatever one hasn't been decoded yet
 
+---------------------------------------------
+
+ cbdgef   fdcge   
+[1:be 2:fecdb 3:fabcd 4:cgeb 6:agebfd 7:edb 8:cfbegad 9:fgaecd]
+
+[be cfbegad cbdgef fgaecd cgeb fdcge agebfd fecdb fabcd edb]
+
+0:
+1:be
+2:fecdb
+3:fabcd
+4:cgeb
+5:
+6:agebfd
+7:edb
+8:cfbegad
+9:fgaecd
