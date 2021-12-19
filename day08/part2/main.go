@@ -4,11 +4,13 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"sort"
+	"strconv"
 	"strings"
 )
 
 func main() {
-	input, err := os.Open("test.txt")
+	input, err := os.Open("input.txt")
 	if err != nil {
 		panic(err)
 	}
@@ -47,71 +49,91 @@ func main() {
 		c += 1
 	}
 
+	var decodedNums []int
 	for _, rows := range allLines {
 		mapping := make(map[int]string)
-		fmt.Println("Rows:\n", rows[0:10])
+		mappingAlt := make(map[string]int)
+
+		// Find the numbers with a unique length i.e. the "known numbers"
 		for ic, col := range rows[0:10] {
+			sCol := sortStringByCharacter(col)
 			if ic > 9 {
 				break
 			}
-			// Find the easy numbers
-			if len(col) == 2 {
-				mapping[1] = col
+			if len(sCol) == 2 {
+				mapping[1] = sCol
+				mappingAlt[sCol] = 1
 			}
-			if len(col) == 3 {
-				mapping[7] = col
+			if len(sCol) == 3 {
+				mapping[7] = sCol
+				mappingAlt[sCol] = 7
 			}
-			if len(col) == 4 {
-				mapping[4] = col
+			if len(sCol) == 4 {
+				mapping[4] = sCol
+				mappingAlt[sCol] = 4
 			}
-			if len(col) == 7 {
-				mapping[8] = col
+			if len(sCol) == 7 {
+				mapping[8] = sCol
+				mappingAlt[sCol] = 8
 			}
+		}
 
-			// Now find the harder numbers
-			if len(col) == 5 {
-				if containsAll(col, mapping[7]) {
-					mapping[3] = col
-					fmt.Printf("%s=%d\n", col, 3)
+		// Now find the numbers we don't know and add them to the map
+		for ic, col := range rows[0:10] {
+			sCol := sortStringByCharacter(col)
+			if ic > 9 {
+				break
+			}
+			if len(sCol) == 5 {
+				if containsAll(sCol, mapping[7]) {
+					mapping[3] = sCol
+					mappingAlt[sCol] = 3
 					continue
-				} else if containsN(mapping[4], col) == 2 {
-					mapping[2] = col
-					fmt.Printf("%s=%d\n", col, 2)
+				} else if containsN(mapping[4], sCol) == 2 {
+					mapping[2] = sCol
+					mappingAlt[sCol] = 2
 					continue
-				} else if containsN(mapping[4], col) == 3 {
-					mapping[5] = col
-					fmt.Printf("%s=%d\n", col, 5)
+				} else if containsN(mapping[4], sCol) == 3 {
+					mapping[5] = sCol
+					mappingAlt[sCol] = 5
 					continue
 				}
 			}
-			if len(col) == 6 {
-				if containsAll(col, mapping[1]) && containsAll(col, mapping[3]) && containsAll(col, mapping[4]) && containsAll(col, mapping[5]) {
-					mapping[9] = col
-					fmt.Printf("%s=%d\n", col, 9)
+			if len(sCol) == 6 {
+				if containsAll(sCol, mapping[1]) && containsAll(sCol, mapping[3]) && containsAll(sCol, mapping[4]) && containsAll(sCol, mapping[5]) {
+					mapping[9] = sCol
+					mappingAlt[sCol] = 9
 					continue
-				} else if containsAll(col, mapping[1]) && containsAll(col, mapping[5]) {
-					mapping[6] = col
-					fmt.Printf("%s=%d\n", col, 6)
+				} else if containsN(mapping[1], sCol) == 1 && containsAll(sCol, mapping[5]) {
+					mapping[6] = sCol
+					mappingAlt[sCol] = 6
 					continue
 				} else {
-					mapping[0] = col
-					fmt.Printf("%s=%d\n", col, 0)
+					mapping[0] = sCol
+					mappingAlt[sCol] = 0
 					continue
 				}
 			}
 		}
-		fmt.Println(mapping)
-	}
-}
 
-// mapHasVal returns true if a value is already in a map
-func mapHasVal(m map[int]string, s string) bool {
-	for _, v := range m {
-		if v == s {
-			return true
+		// Build the string of decoded numbers i.e. the last 4 digits of the input
+		builder := strings.Builder{}
+		for _, col := range rows[10:] {
+			sCol := sortStringByCharacter(col)
+			builder.WriteString(strconv.Itoa(mappingAlt[sCol]))
 		}
+		builderStringInt, _ := strconv.Atoi(builder.String())
+		decodedNums = append(decodedNums, builderStringInt)
+		builder.Reset()
 	}
-	return false
+
+	// Sum all the decoded numbers to get the answer
+	var answer int
+	for _, num := range decodedNums {
+		answer += num
+	}
+
+	fmt.Printf("Answer: %d\n", answer)
 }
 
 // containsAll returns true if a given string contains all of a given set of characters
@@ -125,6 +147,7 @@ func containsAll(s, c string) bool {
 	return true
 }
 
+// containsN returns the number of characters from a given string, that are in another given string
 func containsN(from, in string) int {
 	fromChars := strings.Split(from, "")
 	c := 0
@@ -134,4 +157,22 @@ func containsN(from, in string) int {
 		}
 	}
 	return c
+}
+
+// stringToRuneSlice converts a string to a slice of runes
+func stringToRuneSlice(s string) []rune {
+	var r []rune
+	for _, runeValue := range s {
+		r = append(r, runeValue)
+	}
+	return r
+}
+
+// sortStringByCharacter sorts a string by character
+func sortStringByCharacter(s string) string {
+	r := stringToRuneSlice(s)
+	sort.Slice(r, func(i, j int) bool {
+		return r[i] < r[j]
+	})
+	return string(r)
 }
