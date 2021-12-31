@@ -13,10 +13,6 @@ import (
 
 var test bool
 
-// TODO:
-// Optimise the bingo function to use a loop
-// Complete part 2 of the challenge
-
 func main() {
 	flag.BoolVar(&test, "test", false, "run with test input or real input")
 	flag.Parse()
@@ -71,35 +67,56 @@ func main() {
 	}
 
 	// Mark each number [1], check for a win condition [2] and sum the answer [3]
+	boardWin := make([]bool, len(boards))
 	for _, n := range nums {
-		for _, b := range boards {
-			for i, v := range b {
+		for b := range boards {
+			if boardWin[b] {
+				continue
+			}
+			for i, v := range boards[b] {
 				// [1] mark each number
 				if v == n {
-					b[i] = -1
+					boards[b][i] = -1
 					break
 				}
 			}
 			// [2] check for a win condition
-			win, err := bingo(b)
+			// win, err := bingo(boards[b])
+			win, err := bingo(boards[b])
 			if err != nil {
 				log.Fatalln(err)
 			}
 			if win {
 				// [3] sum the answer
-				sum := 0
-				for _, x := range b {
-					if x != -1 {
-						sum += x
-					}
-				}
+				sum := sumUnmarked(boards[b], -1)
 				answer := n * sum
 				fmt.Println("Answer:", answer)
-
-				return
+				boardWin[b] = true
 			}
 		}
 	}
+}
+
+// Returns the sum of unmarked numbers on a bingo board
+func sumUnmarked(b []int, i int) int {
+	s := 0
+	for _, n := range b {
+		if n != i {
+			s += n
+		}
+	}
+	return s
+}
+
+// Remove an item from a multi-dimensional slice
+func removeItem2D(boards [][]int, i int) [][]int {
+	var newBoards [][]int
+	for x, b := range boards {
+		if x != i {
+			newBoards = append(newBoards, b)
+		}
+	}
+	return newBoards
 }
 
 // Checks a bingo card to determine if it wins
